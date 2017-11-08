@@ -1,0 +1,84 @@
+<!DOCTYPE html>
+<html >
+<head>
+  <meta charset="UTF-8">
+  <title>Atualização de Datas</title>
+      <link rel="stylesheet" href="%%=MicrositeURL(121709)=%%">
+</head>
+
+<body>
+
+%%[
+
+VAR @BASE, @DT1, @DT2, @DT3, @KEY, @DE, @STATUS
+
+SET @BASE = RequestParameter("base")
+SET @DT1 = RequestParameter("dt1")
+SET @DT2 = RequestParameter("dt2")
+SET @DT3 = RequestParameter("dt3")
+
+SET @STATUS = "ATIVO"
+
+IF EMPTY (@BASE) 
+  AND EMPTY (@DT1) 
+  AND EMPTY (@DT2) 
+  AND EMPTY (@DT3) 
+THEN 
+
+]%%
+
+  <div id="form-main">
+  <div id="form-div">
+    <form action="%%=RequestParameter('PAGEURL')=%%" method="POST">
+
+      <select class="validate[required,custom[email]] feedback-input" id="email" name="base" required="required">
+        <option value="">Selecione a Campanha</option>
+        <option value="Teste_Data_01">CAMPANHA_01</option>
+        <option value="Teste_Data_02">CAMPANHA_02</option>
+        <option value="Teste_Data_03">CAMPANHA_03</option>
+
+      <p class="name">
+        <input name="dt1" type="date" class="validate[required,custom[email]] feedback-input" id="email"/>
+      </p>
+
+      <p class="name">
+        <input name="dt2" type="date" class="validate[required,custom[email]] feedback-input" id="email"/>
+      </p>
+
+      <p class="name">
+        <input name="dt3" type="hidden" id="name" value="%%=Now()=%%"/>
+      </p>
+      
+      <div class="submit">
+        <input type="submit" value="Alterar" id="button-blue"/>
+        <div class="ease"></div>
+      </div>
+    </form>
+  </div>
+  
+%%[
+
+ELSE
+
+SET @DE = LookupRows(@BASE,"STATUS",@STATUS)
+  
+  IF RowCount(@DE) > 0 THEN
+
+    FOR @i = 1 TO RowCount(@DE) DO
+
+      SET @KEY = Field(Row(@DE, @i),"EMAIL")
+
+        UpsertDE(@BASE,1,"EMAIL",@KEY,"DATA_INICIO",@DT1,"DATA_FIM",@DT2,"DATA_ATUALIZACAO",@DT3,"ATUALIZADO","True")
+
+    NEXT @I
+
+  ENDIF
+
+Redirect(MicrositeURL(121710))
+
+ENDIF
+
+]%%
+  
+</body>
+</html>
