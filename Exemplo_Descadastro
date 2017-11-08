@@ -1,0 +1,77 @@
+<!DOCTYPE html>
+
+<html>
+<head>
+<title>Template preferências</title>
+<meta charset=utf-8"> 
+</head>
+
+%%[
+/*Inicio do AmpScript*/
+
+/*Recupera os Valores de EmailAddress e SubscriberKey do assinante que clicar no link*/
+
+VAR @motivo, @mail, @mu_statusCode, @mu_statusMsg, @errorCode, @subkey
+SET @mail = requestparameter("em")
+SET @subkey = requestparameter("sk")
+SET @motivo = requestparameter("motivo")
+
+IF EMPTY (@motivo) THEN /*Inicio do Formulario com as opções de descadastramento*/
+
+]%%
+
+<body>
+<h1>Prezado(a) , por favor, ajude-nos a melhorar!</h1>
+<p>Por que você deseja se descadastrar?</p>
+<form action="%%= RequestParameter('PAGEURL') =%%" method="post">
+<input type="text" maxlength="254" name="EmailAddress" id="EmailAddress" value="%%=v(@mail)=%%"/></br></br>
+<input type="text" maxlength="254" name="SubscriberKey" id="SubscriberKey" value="%%=v(@subkey)=%%"/></br></br>
+<input type="radio" name="motivo" value="Frequência de Emails muito alta"><label>Frequência de Emails muito alta</label></br></br>
+<input type="radio" name="motivo" value="As mensagens estavam deixando minha caixa postal cheia"><label>As mensagens estavam deixando minha caixa postal cheia</label></br></br>
+<input type="radio" name="motivo" value="Não autorizei ou não me recordo de ter autorizado o envio das comunicações"><label>Não autorizei ou não me recordo de ter autorizado o envio das comunicações</label></br></br>
+<input type="radio" name="motivo" value="O conteudo não é do meu interesse"><label>O conteudo não é do meu interesse</label></br></br>
+<input type="submit" value="CONFIRMAR DESCADASTRO" >
+</form>
+
+%%[
+
+ELSE /*Confirmação de OptOut do CLiente*/
+
+IF NOT EMPTY(@mail) THEN
+
+/*Insere os dados na DataExtension*/
+	
+	UpsertDE("sfmc_teste2",1,"email", @mail, "motivo", @motivo)
+
+/*Atualiza o AllSubscriber com o usuario em Unsubscriberd*/
+
+		SET @mail = CreateObject("Subscriber")
+		SetObjectProperty(@mail, "EmailAddress", RequestParameter("EmailAddress"))
+
+			IF NOT EMPTY(@subkey) THEN
+				SetObjectProperty(@mail, "SubscriberKey", @subkey)
+			ENDIF
+
+		SetObjectProperty(@mail, "Status", "Unsubscribed")
+		SET @mu_statusCode = InvokeUpdate(@mail, @mu_statusMsg, @errorCode)
+
+/*Fim da Condição para iserção do OptOut*/
+		
+				IF @mu_statusCode != "OK" THEN
+					Redirect("http://www.google.com.br") /*Pagina de sucesso*/
+					ELSE
+					Redirect("http://www.g1.com.br") /*Pagina de erro*/
+				ENDIF
+				
+ENDIF
+
+ENDIF
+
+/*Fim do AmpScript*/
+]%%
+
+</body>
+</html>
+
+LINK = %%=MicrositeURL(5086,"sk", _subscriberKey,"em", emailaddr)=%%
+
