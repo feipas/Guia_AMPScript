@@ -1,0 +1,52 @@
+%%[
+
+LookupRows("AmpScript", "Nome", Nome)
+VAR @nome 
+SET @nome = Trim(Nome) 
+
+IF (IndexOf(Nome," ") > 0)
+	THEN	SET @nome = Substring(Nome,1,IndexOf(Nome," "))	
+	ELSE	SET @nome = Nome 
+ENDIF
+
+]%%
+
+------------------------------------------------------------------------------------------------------------------------------------
+%%[
+
+/*Busca o campo na DataExtension*/
+LookupRows("NOMEdaDE", "NOMEdoCAMPO", CAMPOdaDE)
+
+/*Declarando e atribuindo valor as Variaveis*/
+VAR @NOMEdaVARIAVEL
+SET @NOMEdaVARIAVEL = Trim(CAMPOdaDE)
+
+/*Busca no campo da DE se existe espaço entre os nomes*/
+
+	IF (IndexOf(CAMPOdaDE," ") > 0)THEN
+		SET @NOMEdaVARIAVEL = Substring(CAMPOdaDE,1,IndexOf(CAMPOdaDE," "))
+	ELSE
+		SET @NOMEdaVARIAVEL = CAMPOdaDE
+	ENDIF
+
+]%%
+
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html>
+
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+<title>E-mail</title>
+</head>
+
+<body>
+
+<table>
+	<tr>
+		<td>%%=v(@NOMEdaVARIAVEL)=%%</td>
+	</tr>
+</table>
+
+</body>
+
+</html>
