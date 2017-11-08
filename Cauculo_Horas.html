@@ -1,0 +1,54 @@
+%%[
+VAR @HInicio1, @HFim1, @TOTAL, @SOMA, @SUB, @HORA1, @HORA2, @MIN1, @MIN2, @MINUTOS, @HORAS
+
+SET @HInicio1 = "14:30" -- EXEMPLO
+SET @HFim1 = "15:30"
+
+SET @HInicio1 = Replace(@HInicio1,":",".")
+SET @HFim1 = Replace(@HFim1,":",".")
+
+SET @HORA1 = Substring(@HInicio1,1,Subtract(IndexOf(@HInicio1,"."),1))
+SET @MIN1 = Substring(@HInicio1,IndexOf(@HInicio1,"."),3) 
+SET @MIN1 = Replace(@MIN1,".","")
+
+SET @HORA2 = Substring(@HFim1,1,Subtract(IndexOf(@HFim1,"."),1))
+SET @MIN2 = Substring(@HFim1,IndexOf(@HFim1,"."),3) 
+SET @MIN2 = Replace(@MIN2,".","")
+
+	IF @MIN1 == 00 THEN
+		SET @HORA1 = Subtract(@HORA1,1) 
+		SET @MIN1 = 60
+	ENDIF
+
+	IF @MIN2 == 00 THEN
+		SET @HORA2 = Subtract(@HORA2,1) 
+		SET @MIN2 = 60
+	ENDIF
+
+	IF @HORA1 >= @HORA2 THEN
+		SET @HORAS =Subtract(@HORA1,@HORA2)
+	ELSE
+		SET @HORAS =Subtract(@HORA2,@HORA1)
+	ENDIF
+
+	IF @MIN1 >= @MIN2 THEN
+		SET @MINUTOS = Subtract(@MIN1,@MIN2)
+	ELSE
+		SET @MINUTOS = Subtract(@MIN2,@MIN1)
+	ENDIF
+
+	IF @MINUTOS > 60 THEN
+		SET @MINUTOS = Subtract(@MINUTOS,60) 
+		SET @HORAS =Add(@HORAS,1)
+	ENDIF
+
+	IF Length(@HORAS) == 1 THEN
+		SET @HORAS =CONCAT("0",@HORAS)
+	ENDIF
+
+	IF Length(@MINUTOS) == 1 THEN
+		SET @MINUTOS = CONCAT("0",@MINUTOS)
+	ENDIF
+
+SET @TOTAL = CONCAT(@HORAS,":",@MINUTOS) 
+]%%
